@@ -13,7 +13,10 @@ export class Auth {
     email: string;
 
     @Prop({ required: true })
-    password: string;
+    password: string;  
+
+    @Prop({}) 
+    refreshToken: string;
 } 
 
 export const AuthSchema = SchemaFactory.createForClass(Auth);
