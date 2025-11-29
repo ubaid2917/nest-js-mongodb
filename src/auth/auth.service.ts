@@ -1,4 +1,4 @@
-import { Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
 import { Auth } from './entities/auth.entity';
 import { CreateAuthDto } from './dto/create-auth.dto';
 import { InjectModel } from '@nestjs/mongoose';
@@ -22,7 +22,11 @@ export class AuthService {
     }
 
     // create auth
-    async create(createAuthDto: CreateAuthDto): Promise<Auth> {
+    async create(createAuthDto: CreateAuthDto): Promise<Auth> { 
+        const isAlreadyExist = await this.authModel.findOne({ email: createAuthDto.email });
+        if (isAlreadyExist) {
+            throw new ConflictException('Email already in use');
+        }
         createAuthDto.password = await this.hashedPassword(createAuthDto.password);
 
         const auth = new this.authModel(createAuthDto);
